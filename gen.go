@@ -254,6 +254,9 @@ func (l *Link) Resolve(r *Schema) {
 	if l.Schema != nil {
 		l.Schema = l.Schema.Resolve(r)
 	}
+	if l.TargetSchema != nil {
+		l.TargetSchema = l.TargetSchema.Resolve(r)
+	}
 	l.HRef.Resolve(r)
 }
 
