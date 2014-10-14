@@ -63,6 +63,10 @@ func (rf Reference) Resolve(r *Schema) *Schema {
 	return node.(*Schema)
 }
 
+func (rf Reference) String() string {
+	return string(rf)
+}
+
 func encode(t string) (encoded string) {
 	encoded = strings.Replace(t, "/", "~1", -1)
 	return strings.Replace(encoded, "~", "~0", -1)
