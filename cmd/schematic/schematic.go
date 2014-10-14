@@ -24,11 +24,11 @@ import (
 )
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Fatal(r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		log.Fatal(r)
+	// 	}
+	// }()
 
 	log.SetFlags(0)
 
@@ -46,7 +46,7 @@ func main() {
 		}
 	}
 
-	var s schematic.Schema
+	var s schematic.Document
 	d := json.NewDecoder(f)
 	if err := d.Decode(&s); err != nil {
 		log.Fatal(err)
