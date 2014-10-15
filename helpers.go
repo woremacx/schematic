@@ -21,6 +21,7 @@ var helpers = template.FuncMap{
 	"args":       args,
 	"values":     values,
 	"goType":     goType,
+	"linkType":   linkType,
 }
 
 var (
@@ -29,8 +30,12 @@ var (
 	camelcase = regexp.MustCompile(`(?m)[-.$/:_{}\s]`)
 )
 
-func goType(p *Schema) string {
-	return p.GoType()
+func goType(d *Document, p *Schema) string {
+	return d.GoType(p)
+}
+
+func linkType(d *Document, l *Link) string {
+	return d.LinkType(l)
 }
 
 func required(n string, def *Schema) bool {
@@ -119,14 +124,14 @@ func asComment(c string) string {
 	return buf.String()
 }
 
-func values(n string, s *Schema, l *Link) string {
-	v := s.Values(n, l)
+func values(d *Document, l *Link) string {
+	v := d.LinkValues(l)
 	return strings.Join(v, ", ")
 }
 
-func params(l *Link) string {
+func params(d *Document, l *Link) string {
 	var p []string
-	order, params := l.Parameters()
+	order, params := d.LinkParameters(l)
 	for _, n := range order {
 		p = append(p, fmt.Sprintf("%s %s", initialLow(n), params[n]))
 	}

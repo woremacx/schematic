@@ -54,6 +54,7 @@ func main() {
 
 	code, err := s.Generate()
 	if err != nil {
+		fmt.Println(string(code))
 		log.Fatal(err)
 	}
 	fmt.Println(string(code))

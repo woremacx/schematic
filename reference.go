@@ -63,6 +63,11 @@ func (rf Reference) Resolve(r *Schema) *Schema {
 	return node.(*Schema)
 }
 
+func (rf Reference) Name() string {
+	refs := strings.Split(string(rf), "/")
+	return refs[len(refs)-1]
+}
+
 func (rf Reference) String() string {
 	return string(rf)
 }

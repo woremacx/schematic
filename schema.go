@@ -1,5 +1,7 @@
 package schematic
 
+import "fmt"
+
 // Schema represents a JSON Schema.
 type Schema struct {
 	ID          string `json:"id,omitempty"`
@@ -69,4 +71,28 @@ type Link struct {
 	Method       string  `json:"method,omitempty"`
 	Schema       *Schema `json:"schema,omitempty"`
 	TargetSchema *Schema `json:"targetSchema,omitempty"`
+}
+
+// Types returns the array of types described by this schema.
+func (s *Schema) Types() (types []string) {
+	if arr, ok := s.Type.([]interface{}); ok {
+		for _, v := range arr {
+			types = append(types, v.(string))
+		}
+	} else if str, ok := s.Type.(string); ok {
+		types = append(types, str)
+	} else {
+		panic(fmt.Sprintf("unknown type %v", s.Type))
+	}
+	return types
+}
+
+// URL returns schema base URL.
+func (s *Schema) URL() string {
+	for _, l := range s.Links {
+		if l.Rel == "self" {
+			return l.HRef.String()
+		}
+	}
+	return ""
 }

@@ -6,14 +6,16 @@ var templates = map[string]string{"field.tmpl": `{{initialCap .Name}} {{.Type}} 
 `,
 	"funcs.tmpl": `{{$Name := .Name}}
 {{$Def := .Definition}}
+{{$Doc := .Document}}
 {{range .Definition.Links}}
-  {{if eq .Rel "update" "create" }}
-   type {{printf "%s-%s-Opts" $Name .Title | initialCap}} {{.GoType}}
+  {{if .Schema}}
+   type {{printf "%s-%s-Opts" $Name .Title | initialCap}} {{linkType $Doc .}}
   {{end}}
 
   {{asComment .Description}}
-  func (s *Service) {{printf "%s-%s" $Name .Title | initialCap}}({{params .}}) ({{values $Name $Def .}}) {
-    {{if eq .Rel "destroy"}}
+  func (s *Service) {{printf "%s-%s" $Name .Title | initialCap}}({{params $Doc .}}) ({{values $Doc .}}) {
+    {{.}}
+    {{if eq .Method "DELETE"}}
       return s.Delete(fmt.Sprintf("{{.HRef}}", {{args .HRef}}))
     {{else if eq .Rel "self"}}
       {{$Var := initialLow $Name}}var {{$Var}} {{initialCap $Name}}
@@ -22,7 +24,7 @@ var templates = map[string]string{"field.tmpl": `{{initialCap .Name}} {{.Type}} 
       {{$Var := printf "%s-%s" $Name "List" | initialLow}}
       var {{$Var}} []*{{initialCap $Name}}
       return {{$Var}}, s.Get(&{{$Var}}, fmt.Sprintf("{{.HRef}}", {{args .HRef}}), lr)
-    {{else if eq .Rel "empty"}}
+    {{else if eq .TargetSchema nil}}
       return s.{{methodCap .Method}}(fmt.Sprintf("{{.HRef}}", {{args .HRef}}))
     {{else}}
       {{$Var := initialLow $Name}}var {{$Var}} {{initialCap $Name}}
@@ -228,7 +230,7 @@ func String(v string) *string {
 }
 `,
 	"struct.tmpl": `{{asComment .Definition.Description}}
-type {{initialCap .Name}} {{goType .Definition}}
+type {{initialCap .Name}} {{goType .Document .Definition}}
 `,
 }
 
