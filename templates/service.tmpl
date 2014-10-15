@@ -107,8 +107,8 @@ func (s *Service) Put(v interface{}, path string, body interface{}) error {
 }
 
 // Delete sends a DELETE request.
-func (s *Service) Delete(path string) error {
-	return s.Do(nil, "DELETE", path, nil, nil)
+func (s *Service) Delete(v interface{}, path string) error {
+	return s.Do(v, "DELETE", path, nil, nil)
 }
 
 // ListRange describes a range.

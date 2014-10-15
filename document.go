@@ -168,6 +168,16 @@ func (d *Document) LinkType(l *Link) string {
 	return d.goType(l.Schema, true, false)
 }
 
+// TargetType returns Go type for the given link as string.
+func (d *Document) TargetType(l *Link) string {
+	s := d.Resolve(l.TargetSchema)
+	if s.IsCustomType() {
+		name := l.TargetSchema.Ref.Name()
+		return fmt.Sprintf("*%s", initialCap(name))
+	}
+	return d.GoType(s)
+}
+
 // Parameters returns link parameters names and types.
 func (d *Document) LinkParameters(l *Link) ([]string, map[string]string) {
 	if l.HRef == nil {
@@ -199,23 +209,13 @@ func (d *Document) LinkParameters(l *Link) ([]string, map[string]string) {
 // Values returns link return values types.
 func (d *Document) LinkValues(l *Link) (values []string) {
 	if l.TargetSchema != nil && l.TargetSchema.Ref != nil {
-		name := l.TargetSchema.Ref.Name()
-		// s := d.Resolve(l.TargetSchema)
-		values = append(values, initialCap(name))
+		s := d.Resolve(l.TargetSchema)
+		if s.IsCustomType() {
+			name := l.TargetSchema.Ref.Name()
+			values = append(values, fmt.Sprintf("*%s", initialCap(name)))
+		} else {
+			values = append(values, d.GoType(s))
+		}
 	}
-	// switch l.Rel {
-	// case "destroy", "empty":
-	// 	values = append(values, "error")
-	// case "instances":
-	// 	values = append(values, fmt.Sprintf("[]*%s", name), "error")
-	// default:
-	// 	if s.IsCustomType() {
-	// 		values = append(values, fmt.Sprintf("*%s", name), "error")
-	// 		// } else {
-	// 		// values = append(values, s.GoType(), "error")
-	// 	}
-	// }
-	// Append error
-	values = append(values, "error")
-	return values
+	return append(values, "error")
 }

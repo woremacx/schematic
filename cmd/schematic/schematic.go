@@ -24,11 +24,11 @@ import (
 )
 
 func main() {
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		log.Fatal(r)
-	// 	}
-	// }()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatal(r)
+		}
+	}()
 
 	log.SetFlags(0)
 
@@ -54,7 +54,6 @@ func main() {
 
 	code, err := s.Generate()
 	if err != nil {
-		fmt.Println(string(code))
 		log.Fatal(err)
 	}
 	fmt.Println(string(code))

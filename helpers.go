@@ -22,6 +22,7 @@ var helpers = template.FuncMap{
 	"values":     values,
 	"goType":     goType,
 	"linkType":   linkType,
+	"targetType": targetType,
 }
 
 var (
@@ -36,6 +37,10 @@ func goType(d *Document, p *Schema) string {
 
 func linkType(d *Document, l *Link) string {
 	return d.LinkType(l)
+}
+
+func targetType(d *Document, l *Link) string {
+	return d.TargetType(l)
 }
 
 func required(n string, def *Schema) bool {

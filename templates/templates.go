@@ -14,21 +14,11 @@ var templates = map[string]string{"field.tmpl": `{{initialCap .Name}} {{.Type}} 
 
   {{asComment .Description}}
   func (s *Service) {{printf "%s-%s" $Name .Title | initialCap}}({{params $Doc .}}) ({{values $Doc .}}) {
-    {{.}}
-    {{if eq .Method "DELETE"}}
-      return s.Delete(fmt.Sprintf("{{.HRef}}", {{args .HRef}}))
-    {{else if eq .Rel "self"}}
-      {{$Var := initialLow $Name}}var {{$Var}} {{initialCap $Name}}
-      return {{if $Def.IsCustomType}}&{{end}}{{$Var}}, s.Get(&{{$Var}}, fmt.Sprintf("{{.HRef}}", {{args .HRef}}), nil)
-    {{else if eq .Rel "instances"}}
-      {{$Var := printf "%s-%s" $Name "List" | initialLow}}
-      var {{$Var}} []*{{initialCap $Name}}
-      return {{$Var}}, s.Get(&{{$Var}}, fmt.Sprintf("{{.HRef}}", {{args .HRef}}), lr)
-    {{else if eq .TargetSchema nil}}
-      return s.{{methodCap .Method}}(fmt.Sprintf("{{.HRef}}", {{args .HRef}}))
+    {{if .TargetSchema}}
+      {{$Var := initialLow $Name}}var {{$Var}} {{targetType $Doc .}}
+      return {{if $Def.IsCustomType}}&{{end}}{{$Var}}, s.Do(&{{$Var}}, "{{.Method}}", fmt.Sprintf("{{.HRef}}", {{args .HRef}}), nil, nil)
     {{else}}
-      {{$Var := initialLow $Name}}var {{$Var}} {{initialCap $Name}}
-      return {{if $Def.IsCustomType}}&{{end}}{{$Var}}, s.{{methodCap .Method}}(&{{$Var}}, fmt.Sprintf("{{.HRef}}", {{args .HRef}}), o)
+      return s.Do(nil, "{{.Method}}", fmt.Sprintf("{{.HRef}}", {{args .HRef}}), nil, nil)
     {{end}}
   }
 {{end}}
@@ -166,8 +156,8 @@ func (s *Service) Put(v interface{}, path string, body interface{}) error {
 }
 
 // Delete sends a DELETE request.
-func (s *Service) Delete(path string) error {
-	return s.Do(nil, "DELETE", path, nil, nil)
+func (s *Service) Delete(v interface{}, path string) error {
+	return s.Do(v, "DELETE", path, nil, nil)
 }
 
 // ListRange describes a range.

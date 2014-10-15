@@ -96,3 +96,10 @@ func (s *Schema) URL() string {
 	}
 	return ""
 }
+
+func (s *Schema) IsCustomType() bool {
+	if p, ok := s.AdditionalProperties.(bool); ok {
+		return p
+	}
+	return true
+}
