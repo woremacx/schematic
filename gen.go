@@ -118,7 +118,7 @@ func (s *Schema) Types() (types []string, err error) {
 	} else if str, ok := s.Type.(string); ok {
 		types = append(types, str)
 	} else {
-		err = fmt.Errorf("unknown type %v", s.Type)
+		types = append(types, "object")
 	}
 	return types, err
 }
